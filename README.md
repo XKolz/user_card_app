@@ -4,4 +4,7 @@ A new Flutter project.
 
 ## Getting Started
 
-![Alt Text](Untitled%20design.gif)
+1
+![Alt Text](design.gif)
+2
+![Alt Text](assets/design.gif)
