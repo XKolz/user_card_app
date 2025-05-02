@@ -11,12 +11,6 @@ A new Flutter project.
 3
 ![App Demo](assets/design.gif)
 4
-![App Demo](https://raw.githubusercontent.com/XKolz/user_card_app/assets/design.gif)
-5
-![App Demo](https://raw.githubusercontent.com/XKolz/user_card_app/design.gif)
-6
-![App Demo](https://raw.githubusercontent.com/XKolz/user_card_app/assets/design.gif)
-7
-![App Demo](https://raw.githubusercontent.com/XKolz/user_card_app/main/assets/design.gif)
-8
 ![App Demo](https://raw.githubusercontent.com/XKolz/user_card_app/main/design.gif)
+5
+![App Demo](design.gif)
