@@ -4,13 +4,4 @@ A new Flutter project.
 
 ## Getting Started
 
-1
-![Alt Text](design.gif)
-2
-![Alt Text](assets/design.gif)
-3
-![App Demo](assets/design.gif)
-4
-![App Demo](https://raw.githubusercontent.com/XKolz/user_card_app/main/design.gif)
-5
-![App Demo](design.gif)
+![Untitled design](https://github.com/user-attachments/assets/7f686310-a32d-40de-a27a-cc35b249e083)
