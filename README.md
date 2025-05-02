@@ -8,3 +8,7 @@ A new Flutter project.
 ![Alt Text](design.gif)
 2
 ![Alt Text](assets/design.gif)
+3
+![App Demo](assets/design.gif)
+4
+![App Demo](https://raw.githubusercontent.com/XKolz/user_card_app/assets/design.gif)
