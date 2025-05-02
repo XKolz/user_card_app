@@ -18,3 +18,5 @@ A new Flutter project.
 ![App Demo](https://raw.githubusercontent.com/XKolz/user_card_app/assets/design.gif)
 7
 ![App Demo](https://raw.githubusercontent.com/XKolz/user_card_app/main/assets/design.gif)
+8
+![App Demo](https://raw.githubusercontent.com/XKolz/user_card_app/main/design.gif)
