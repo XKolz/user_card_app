@@ -4,6 +4,7 @@ import 'home/user_balance_card.dart';
 import 'wallet/wallet_screen.dart';
 import 'stats/stats_screen.dart';
 import 'settings/settings_screen.dart';
+import 'transactions/transaction_history_screen.dart';
 
 class MainApp extends StatefulWidget {
   const MainApp({Key? key}) : super(key: key);
@@ -105,8 +106,13 @@ class _MainAppState extends State<MainApp> {
             onTap: () {
               // Close the drawer first
               Navigator.pop(context);
-              // Show history page or dialog
-              print('Transaction History clicked');
+              // Navigate to Transaction History screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TransactionHistoryScreen(),
+                ),
+              );
             },
           ),
           _buildDrawerItem(

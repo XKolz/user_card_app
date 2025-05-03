@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../theme/app_theme.dart';
+import '../transactions/transaction_history_screen.dart';
 
 class UserBalanceCard extends StatelessWidget {
   final String userName;
@@ -93,7 +94,6 @@ class UserBalanceCard extends StatelessWidget {
                   ],
                 ),
                 
-                // Rest of the content remains the same
                 const SizedBox(height: 32.0),
                 
                 // Balance Card
@@ -188,7 +188,6 @@ class UserBalanceCard extends StatelessWidget {
                   ),
                 ),
                 
-                // Rest of your UI code...
                 const SizedBox(height: 32.0),
                 
                 // Quick actions
@@ -239,7 +238,13 @@ class UserBalanceCard extends StatelessWidget {
                       'History',
                       AppTheme.orangeColor,
                       () {
-                        print('History button clicked');
+                        // Navigate to transaction history
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TransactionHistoryScreen(),
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -260,7 +265,13 @@ class UserBalanceCard extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () {
-                        print('View all transactions clicked');
+                        // Navigate to transaction history screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TransactionHistoryScreen(),
+                          ),
+                        );
                       },
                       child: Text(
                         'View All',
@@ -317,7 +328,7 @@ class UserBalanceCard extends StatelessWidget {
     );
   }
 
-  // Your helper methods remain the same
+  // Helper methods
   Widget _buildActionButton(
     BuildContext context,
     IconData icon,
@@ -325,7 +336,6 @@ class UserBalanceCard extends StatelessWidget {
     Color color,
     VoidCallback onPressed,
   ) {
-    // Implementation unchanged
     return GestureDetector(
       onTap: onPressed,
       child: Column(
@@ -367,7 +377,6 @@ class UserBalanceCard extends StatelessWidget {
     IconData icon,
     String time,
   ) {
-    // Implementation unchanged
     final bool isNegative = amount.contains('-');
     
     return Container(
