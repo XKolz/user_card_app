@@ -24,6 +24,13 @@ class UserBalanceCard extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: AppTheme.darkTextColor,
         elevation: 0,
+        // Add leading hamburger menu icon
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
@@ -86,6 +93,7 @@ class UserBalanceCard extends StatelessWidget {
                   ],
                 ),
                 
+                // Rest of the content remains the same
                 const SizedBox(height: 32.0),
                 
                 // Balance Card
@@ -180,6 +188,7 @@ class UserBalanceCard extends StatelessWidget {
                   ),
                 ),
                 
+                // Rest of your UI code...
                 const SizedBox(height: 32.0),
                 
                 // Quick actions
@@ -193,6 +202,7 @@ class UserBalanceCard extends StatelessWidget {
                 
                 const SizedBox(height: 16.0),
                 
+                // Quick action buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -202,7 +212,7 @@ class UserBalanceCard extends StatelessWidget {
                       'Send',
                       AppTheme.primaryColor,
                       () {
-                        print('Send Money button clicked for user: $userName with balance: \$${balance.toStringAsFixed(2)}');
+                        print('Send Money button clicked');
                       },
                     ),
                     _buildActionButton(
@@ -237,7 +247,7 @@ class UserBalanceCard extends StatelessWidget {
                 
                 const SizedBox(height: 32.0),
                 
-                // Recent transactions
+                // Recent transactions section - title row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -265,7 +275,7 @@ class UserBalanceCard extends StatelessWidget {
                 
                 const SizedBox(height: 16.0),
                 
-                // Transaction list
+                // Transaction items
                 _buildTransactionItem(
                   context,
                   'Amazon',
@@ -307,6 +317,7 @@ class UserBalanceCard extends StatelessWidget {
     );
   }
 
+  // Your helper methods remain the same
   Widget _buildActionButton(
     BuildContext context,
     IconData icon,
@@ -314,6 +325,7 @@ class UserBalanceCard extends StatelessWidget {
     Color color,
     VoidCallback onPressed,
   ) {
+    // Implementation unchanged
     return GestureDetector(
       onTap: onPressed,
       child: Column(
@@ -355,6 +367,7 @@ class UserBalanceCard extends StatelessWidget {
     IconData icon,
     String time,
   ) {
+    // Implementation unchanged
     final bool isNegative = amount.contains('-');
     
     return Container(
