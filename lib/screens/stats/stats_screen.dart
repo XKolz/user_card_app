@@ -146,10 +146,13 @@ class StatsScreen extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  Text(
-                                    '${category.name} (${category.percentage}%)',
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      fontWeight: FontWeight.w500,
+                                  Flexible(
+                                    child: Text(
+                                      '${category.name} (${category.percentage}%)',
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],
@@ -302,12 +305,16 @@ class StatsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: Colors.grey,
+              Flexible(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.grey,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
                 width: 40,
                 height: 40,
@@ -351,10 +358,13 @@ class StatsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              Text(
-                'from last month',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey,
+              Flexible(
+                child: Text(
+                  'from last month',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.grey,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -401,11 +411,14 @@ class StatsScreen extends StatelessWidget {
                   color: AppTheme.darkTextColor,
                 ),
               ),
-              Text(
-                isOverBudget ? 'Over budget by \$${(current - total).toStringAsFixed(0)}' : '$formattedPercentage% of budget',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: isOverBudget ? AppTheme.redColor : Colors.grey,
-                  fontWeight: isOverBudget ? FontWeight.w500 : FontWeight.normal,
+              Flexible(
+                child: Text(
+                  isOverBudget ? 'Over budget by \$${(current - total).toStringAsFixed(0)}' : '$formattedPercentage% of budget',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: isOverBudget ? AppTheme.redColor : Colors.grey,
+                    fontWeight: isOverBudget ? FontWeight.w500 : FontWeight.normal,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
