@@ -18,7 +18,7 @@ class BarChartPainter extends CustomPainter {
     
     // Draw axes
     final axesPaint = Paint()
-      ..color = Colors.grey.withOpacity(0.3)
+      ..color = Colors.grey.withValues(alpha: 0.3)
       ..strokeWidth = 1;
     
     // X axis
@@ -49,7 +49,7 @@ class BarChartPainter extends CustomPainter {
       );
       
       // Draw month label
-      final textStyle = TextStyle(
+      const textStyle = TextStyle(
         color: Colors.grey,
         fontSize: 12,
       );
@@ -68,8 +68,8 @@ class BarChartPainter extends CustomPainter {
       );
       
       // Draw amount label
-      final amountStyle = TextStyle(
-        color: const Color(0xFF2D3142),
+      const amountStyle = TextStyle(
+        color: Color(0xFF2D3142),
         fontSize: 10,
         fontWeight: FontWeight.bold,
       );
@@ -94,5 +94,5 @@ class BarChartPainter extends CustomPainter {
   }
   
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }

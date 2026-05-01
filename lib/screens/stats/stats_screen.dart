@@ -1,291 +1,256 @@
 import 'package:flutter/material.dart';
+
+import '../../state/app_controller.dart';
 import '../../theme/app_theme.dart';
-import 'models/expense_category.dart';
-import 'models/monthly_spending.dart';
-import 'widgets/pie_chart_painter.dart';
+import '../../widgets/app_drawer.dart';
 import 'widgets/bar_chart_painter.dart';
+import 'widgets/pie_chart_painter.dart';
 
 class StatsScreen extends StatelessWidget {
-  const StatsScreen({Key? key}) : super(key: key);
+  const StatsScreen({
+    super.key,
+    required this.controller,
+    required this.currentIndex,
+    required this.onSelectTab,
+  });
+
+  final AppController controller;
+  final int currentIndex;
+  final ValueChanged<int> onSelectTab;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    // Sample data for charts
-    final List<ExpenseCategory> expenseCategories = [
-      ExpenseCategory('Shopping', 35, AppTheme.primaryColor),
-      ExpenseCategory('Food', 25, AppTheme.redColor),
-      ExpenseCategory('Transport', 15, AppTheme.secondaryColor),
-      ExpenseCategory('Bills', 15, AppTheme.orangeColor),
-      ExpenseCategory('Others', 10, Colors.grey),
-    ];
-    
-    // Sample monthly spending data
-    final List<MonthlySpending> monthlyData = [
-      MonthlySpending('Jan', 850),
-      MonthlySpending('Feb', 750),
-      MonthlySpending('Mar', 950),
-      MonthlySpending('Apr', 1200),
-      MonthlySpending('May', 980),
-    ];
-    
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        title: const Text('Statistics'),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: AppTheme.darkTextColor,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.calendar_today_outlined),
-            onPressed: () {
-              print('Calendar filter clicked');
-            },
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, _) {
+        final theme = Theme.of(context);
+        final expenseCategories = controller.expenseCategories;
+        final monthlyData = controller.monthlySpending;
+
+        return Scaffold(
+          backgroundColor: AppTheme.backgroundColor,
+          drawer: AppDrawer(
+            controller: controller,
+            currentIndex: currentIndex,
+            onSelectTab: onSelectTab,
           ),
-        ],
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Summary cards
-                Row(
+          appBar: AppBar(
+            title: const Text('Statistics'),
+            centerTitle: true,
+            backgroundColor: Colors.white,
+            foregroundColor: AppTheme.darkTextColor,
+            elevation: 0,
+            leading: Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                );
+              },
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.calendar_today_outlined),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Statistics update from the current demo month.')),
+                  );
+                },
+              ),
+            ],
+          ),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: _buildSummaryCard(
-                        context,
-                        'Monthly Spend',
-                        '\$1,250.75',
-                        '+12.5%',
-                        AppTheme.primaryColor,
-                        Icons.show_chart,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildSummaryCard(
-                        context,
-                        'Monthly Income',
-                        '\$3,842.50',
-                        '+4.2%',
-                        AppTheme.secondaryColor,
-                        Icons.account_balance_wallet,
-                      ),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 32.0),
-                
-                // Spending Overview
-                Text(
-                  'Spending Overview',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: AppTheme.darkTextColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                
-                const SizedBox(height: 16.0),
-                
-                // Expense Categories Widget - Pie Chart
-                Container(
-                  height: 250,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      // This would be a pie chart in a real app
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey.withOpacity(0.1),
-                          ),
-                          child: CustomPaint(
-                            painter: PieChartPainter(expenseCategories),
-                            child: Container(), // Empty container to hold the CustomPaint
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _SummaryCard(
+                            title: 'Monthly Spend',
+                            amount: formatCurrency(controller.monthlySpendTotal),
+                            percentage: '${expenseCategories.isNotEmpty ? expenseCategories.first.percentage : 0}% mix',
+                            color: AppTheme.primaryColor,
+                            icon: Icons.show_chart,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      // Legend
-                      Expanded(
-                        flex: 1,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: expenseCategories.map((category) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 16,
-                                    height: 16,
-                                    decoration: BoxDecoration(
-                                      color: category.color,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Text(
-                                      '${category.name} (${category.percentage}%)',
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _SummaryCard(
+                            title: 'Monthly Income',
+                            amount: formatCurrency(controller.monthlyIncomeTotal),
+                            percentage: controller.monthlyIncomeTotal >= controller.monthlySpendTotal
+                                ? 'Healthy cashflow'
+                                : 'Below spend',
+                            color: AppTheme.secondaryColor,
+                            icon: Icons.account_balance_wallet,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: 32.0),
-                
-                // Monthly Spending Chart
-                Text(
-                  'Monthly Spending',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: AppTheme.darkTextColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                
-                const SizedBox(height: 16.0),
-                
-                // Bar Chart for Monthly Spending
-                Container(
-                  height: 250,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: CustomPaint(
-                    painter: BarChartPainter(monthlyData, AppTheme.primaryColor),
-                    child: Container(), // Empty container to hold the CustomPaint
-                  ),
-                ),
-                
-                const SizedBox(height: 32.0),
-                
-                // Budget Status
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                      ],
+                    ),
+                    const SizedBox(height: 32),
                     Text(
-                      'Budget Status',
+                      'Spending Overview',
                       style: theme.textTheme.titleLarge?.copyWith(
                         color: AppTheme.darkTextColor,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        print('Set budget clicked');
-                      },
-                      child: Text(
-                        'Set Budget',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    const SizedBox(height: 16),
+                    Container(
+                      height: 250,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey.withValues(alpha: 0.08),
+                              ),
+                              child: CustomPaint(
+                                painter: PieChartPainter(expenseCategories),
+                                child: Container(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: expenseCategories
+                                  .map(
+                                    (category) => Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 16,
+                                            height: 16,
+                                            decoration: BoxDecoration(
+                                              color: category.color,
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Flexible(
+                                            child: Text(
+                                              '${category.name} (${category.percentage}%)',
+                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    const SizedBox(height: 32),
+                    Text(
+                      'Monthly Spending',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: AppTheme.darkTextColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      height: 250,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: CustomPaint(
+                        painter: BarChartPainter(monthlyData, AppTheme.primaryColor),
+                        child: Container(),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Budget Status',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: AppTheme.darkTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => onSelectTab(1),
+                          child: Text(
+                            'Open Wallet',
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    for (final budget in controller.budgets) ...[
+                      _BudgetProgressCard(budget: budget),
+                      const SizedBox(height: 16),
+                    ],
                   ],
                 ),
-                
-                const SizedBox(height: 16.0),
-                
-                // Budget Progress Bars
-                _buildBudgetProgressBar(
-                  context,
-                  'Shopping',
-                  450,
-                  600,
-                  AppTheme.primaryColor,
-                ),
-                
-                const SizedBox(height: 16.0),
-                
-                _buildBudgetProgressBar(
-                  context,
-                  'Food & Drinks',
-                  350,
-                  400,
-                  AppTheme.redColor,
-                ),
-                
-                const SizedBox(height: 16.0),
-                
-                _buildBudgetProgressBar(
-                  context,
-                  'Transportation',
-                  180,
-                  200,
-                  AppTheme.secondaryColor,
-                ),
-                
-                const SizedBox(height: 16.0),
-                
-                _buildBudgetProgressBar(
-                  context,
-                  'Bills & Utilities',
-                  450,
-                  400,
-                  AppTheme.orangeColor,
-                  isOverBudget: true,
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
-  
-  Widget _buildSummaryCard(
-    BuildContext context,
-    String title,
-    String amount,
-    String percentage,
-    Color color,
-    IconData icon,
-  ) {
-    final bool isPositive = percentage.contains('+');
-    
+}
+
+class _SummaryCard extends StatelessWidget {
+  const _SummaryCard({
+    required this.title,
+    required this.amount,
+    required this.percentage,
+    required this.color,
+    required this.icon,
+  });
+
+  final String title;
+  final String amount;
+  final String percentage;
+  final Color color;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -293,7 +258,7 @@ class StatsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -308,9 +273,7 @@ class StatsScreen extends StatelessWidget {
               Flexible(
                 child: Text(
                   title,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: Colors.grey,
-                  ),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -319,16 +282,10 @@ class StatsScreen extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Center(
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: 24,
-                  ),
-                ),
+                child: Icon(icon, color: color, size: 24),
               ),
             ],
           ),
@@ -336,55 +293,35 @@ class StatsScreen extends StatelessWidget {
           Text(
             amount,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppTheme.darkTextColor,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.darkTextColor,
+                ),
           ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isPositive ? AppTheme.secondaryColor.withOpacity(0.1) : AppTheme.redColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+          Text(
+            percentage,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w600,
                 ),
-                child: Text(
-                  percentage,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: isPositive ? AppTheme.secondaryColor : AppTheme.redColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  'from last month',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
           ),
         ],
       ),
     );
   }
-  
-  Widget _buildBudgetProgressBar(
-    BuildContext context,
-    String category,
-    double current,
-    double total,
-    Color color, {
-    bool isOverBudget = false,
-  }) {
-    final double percentage = (current / total).clamp(0.0, 1.0);
-    final formattedPercentage = (percentage * 100).toStringAsFixed(1);
-    
+}
+
+class _BudgetProgressCard extends StatelessWidget {
+  const _BudgetProgressCard({
+    required this.budget,
+  });
+
+  final BudgetProgress budget;
+
+  @override
+  Widget build(BuildContext context) {
+    final percentage = (budget.spent / budget.limit).clamp(0.0, 1.0);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -392,7 +329,7 @@ class StatsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -405,19 +342,21 @@ class StatsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                category,
+                budget.category,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.darkTextColor,
-                ),
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.darkTextColor,
+                    ),
               ),
               Flexible(
                 child: Text(
-                  isOverBudget ? 'Over budget by \$${(current - total).toStringAsFixed(0)}' : '$formattedPercentage% of budget',
+                  budget.isOverBudget
+                      ? 'Over by ${formatCurrency(budget.spent - budget.limit)}'
+                      : '${(percentage * 100).toStringAsFixed(0)}% of budget',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: isOverBudget ? AppTheme.redColor : Colors.grey,
-                    fontWeight: isOverBudget ? FontWeight.w500 : FontWeight.normal,
-                  ),
+                        color: budget.isOverBudget ? AppTheme.redColor : Colors.grey,
+                        fontWeight: budget.isOverBudget ? FontWeight.w600 : FontWeight.normal,
+                      ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -431,9 +370,9 @@ class StatsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: percentage,
-                    backgroundColor: Colors.grey.withOpacity(0.2),
+                    backgroundColor: Colors.grey.withValues(alpha: 0.2),
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      isOverBudget ? AppTheme.redColor : color,
+                      budget.isOverBudget ? AppTheme.redColor : budget.color,
                     ),
                     minHeight: 8,
                   ),
@@ -441,11 +380,11 @@ class StatsScreen extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Text(
-                '\$${current.toInt()} / \$${total.toInt()}',
+                '${formatCurrency(budget.spent)} / ${formatCurrency(budget.limit)}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: AppTheme.darkTextColor,
-                ),
+                      fontWeight: FontWeight.w500,
+                      color: AppTheme.darkTextColor,
+                    ),
               ),
             ],
           ),
